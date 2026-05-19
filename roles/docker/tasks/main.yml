@@ -1,0 +1,40 @@
+---
+- name: Definir usuario alvo para o grupo docker
+  ansible.builtin.set_fact:
+    workstation_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id, true) }}"
+
+- name: Instalar Docker no Debian/Ubuntu
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Instalar Docker no Arch/CachyOS
+  community.general.pacman:
+    name:
+      - docker
+      - docker-compose
+    state: present
+  when: ansible_os_family == "Archlinux"
+
+- name: Instalar Docker no Fedora
+  ansible.builtin.dnf:
+    name:
+      - moby-engine
+      - docker-compose
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Habilitar e iniciar Docker
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Adicionar usuario atual ao grupo docker
+  ansible.builtin.user:
+    name: "{{ workstation_user }}"
+    groups: docker
+    append: true

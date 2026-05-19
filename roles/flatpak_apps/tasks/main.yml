@@ -1,0 +1,17 @@
+---
+- name: Adicionar Flathub
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+
+- name: Instalar apps graficos via Flatpak
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - org.mozilla.firefox
+    - com.obsproject.Studio
+    - org.audacityteam.Audacity
+    - org.godotengine.Godot
+    - com.valvesoftware.Steam

@@ -1,0 +1,35 @@
+---
+- name: Preparar dependencias basicas para rodar o Ansible
+  hosts: localhost
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Instalar Git e Ansible no Debian/Ubuntu
+      ansible.builtin.apt:
+        name:
+          - ansible
+          - git
+          - unzip
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Instalar Git e Ansible no Arch/CachyOS
+      community.general.pacman:
+        name:
+          - ansible
+          - git
+          - unzip
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Archlinux"
+
+    - name: Instalar Git e Ansible no Fedora
+      ansible.builtin.dnf:
+        name:
+          - ansible
+          - git
+          - unzip
+        state: present
+      when: ansible_os_family == "RedHat"

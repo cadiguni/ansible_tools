@@ -1,0 +1,15 @@
+---
+- name: Carregar variaveis por familia de sistema
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Instalar pacotes base - Debian/Ubuntu
+  ansible.builtin.include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- name: Instalar pacotes base - Arch/CachyOS
+  ansible.builtin.include_tasks: arch.yml
+  when: ansible_os_family == "Archlinux"
+
+- name: Instalar pacotes base - Fedora
+  ansible.builtin.include_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"

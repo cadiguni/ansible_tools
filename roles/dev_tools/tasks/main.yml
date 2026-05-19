@@ -1,0 +1,65 @@
+---
+- name: Instalar ferramentas dev no Debian/Ubuntu
+  ansible.builtin.apt:
+    name:
+      - nodejs
+      - npm
+      - pipx
+      - ansible-lint
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Instalar .NET 8 no Ubuntu
+  ansible.builtin.apt:
+    name:
+      - dotnet-sdk-8.0
+      - aspnetcore-runtime-8.0
+    state: present
+  when:
+    - ansible_os_family == "Debian"
+    - ansible_distribution == "Ubuntu"
+
+- name: Instalar ferramentas dev no Arch/CachyOS
+  community.general.pacman:
+    name:
+      - nodejs
+      - npm
+      - dotnet-sdk
+      - aspnet-runtime
+      - python-pipx
+      - ansible-lint
+      - terraform
+    state: present
+  when: ansible_os_family == "Archlinux"
+
+- name: Instalar ferramentas dev no Fedora
+  ansible.builtin.dnf:
+    name:
+      - nodejs
+      - npm
+      - dotnet-sdk-8.0
+      - aspnetcore-runtime-8.0
+      - pipx
+      - ansible-lint
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Instalar Azure Functions Core Tools via npm
+  community.general.npm:
+    name: azure-functions-core-tools@4
+    global: true
+    state: present
+
+- name: Verificar pacotes instalados via pipx
+  become: false
+  ansible.builtin.command:
+    cmd: pipx list --short
+  register: pipx_packages
+  changed_when: false
+  failed_when: false
+
+- name: Instalar AWS CLI via pipx
+  become: false
+  ansible.builtin.command:
+    cmd: pipx install awscli
+  when: "'awscli' not in pipx_packages.stdout"

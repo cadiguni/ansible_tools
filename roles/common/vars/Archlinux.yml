@@ -1,0 +1,20 @@
+---
+common_packages:
+  - base-devel
+  - bash-completion
+  - curl
+  - flatpak
+  - git
+  - htop
+  - jdk21-openjdk
+  - jq
+  - mtr
+  - ncdu
+  - p7zip
+  - python
+  - python-pip
+  - tree
+  - unzip
+  - wget
+  - zip
+  - zsh

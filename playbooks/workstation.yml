@@ -1,0 +1,25 @@
+---
+- name: Configurar workstation Linux
+  hosts: localhost
+  become: true
+
+  roles:
+    - role: common
+      tags:
+        - common
+        - base
+    - role: dev_tools
+      tags:
+        - dev
+    - role: docker
+      tags:
+        - docker
+    - role: vscode
+      tags:
+        - vscode
+        - dev
+    - role: flatpak_apps
+      tags:
+        - flatpak
+        - media
+        - gaming

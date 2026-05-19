@@ -1,0 +1,69 @@
+---
+- name: Instalar chave Microsoft para VS Code no Debian/Ubuntu
+  ansible.builtin.apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Adicionar repositorio do VS Code no Debian/Ubuntu
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/code stable main"
+    filename: vscode
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Instalar VS Code no Debian/Ubuntu
+  ansible.builtin.apt:
+    name: code
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Instalar VS Code OSS no Arch/CachyOS
+  community.general.pacman:
+    name: code
+    state: present
+  when: ansible_os_family == "Archlinux"
+
+- name: Importar chave Microsoft no Fedora
+  ansible.builtin.rpm_key:
+    key: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Adicionar repositorio do VS Code no Fedora
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/vscode.repo
+    mode: "0644"
+    content: |
+      [code]
+      name=Visual Studio Code
+      baseurl=https://packages.microsoft.com/yumrepos/vscode
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Instalar VS Code no Fedora
+  ansible.builtin.dnf:
+    name: code
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Instalar extensoes do VS Code
+  become: false
+  ansible.builtin.command:
+    cmd: "code --install-extension {{ item }}"
+  loop:
+    - ms-dotnettools.csharp
+    - ms-azuretools.vscode-docker
+    - ms-vscode.azure-account
+    - ms-vscode.powershell
+    - redhat.ansible
+    - redhat.vscode-yaml
+    - eamodio.gitlens
+    - github.copilot
+    - github.copilot-chat
+    - hashicorp.terraform
+  changed_when: false
+  failed_when: false
