@@ -64,7 +64,7 @@ sudo dnf install ansible git unzip -y
 ## Executar
 
 ```bash
-git clone https://github.com/lcadiguni/ansible_tools.git
+git clone https://github.com/cadiguni/ansible_tools.git
 cd ansible_tools
 chmod +x scripts/run-local.sh
 ./scripts/run-local.sh
