@@ -81,7 +81,7 @@ usuario.
 
 ## Roles
 
-- `common`: pacotes base, terminal, Python, Java 21, Flatpak e utilitarios.
+- `common`: pacotes base, terminal, Python, Java via pacote da distro, Flatpak e utilitarios.
 - `dev_tools`: Node.js, NPM, .NET 8 onde disponivel, Azure Functions Core Tools, AWS CLI e Terraform no Arch/CachyOS.
 - `docker`: Docker, Docker Compose e grupo `docker`.
 - `vscode`: VS Code e extensoes principais.
@@ -102,7 +102,7 @@ ansible-playbook playbooks/workstation.yml --tags gaming --ask-become-pass
 Incluido:
 
 - Git, curl, wget, unzip, zip e 7-Zip.
-- Python, Node.js/NPM, Java 21 e .NET SDK 8 onde disponivel nos repositorios da distro.
+- Python, Node.js/NPM, Java via pacote da distro e .NET SDK 8 onde disponivel nos repositorios da distro.
 - Docker e Docker Compose.
 - VS Code e extensoes.
 - Firefox, OBS, Audacity, Godot e Steam via Flatpak.

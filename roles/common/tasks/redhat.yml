@@ -1,5 +1,5 @@
 ---
 - name: Instalar pacotes base no Fedora
   ansible.builtin.dnf:
-    name: "{{ common_packages }}"
+    name: "{{ common_packages + [common_java_package] }}"
     state: present
