@@ -143,13 +143,18 @@ make workstation EXTRA='-e install_kubernetes=false -e install_flatpak_apps=fals
 make workstation EXTRA='-e configure_shell=false'
 
 # fixar a stream do repo do Kubernetes
-make workstation EXTRA='-e k8s_repo_version=v1.34'
+make workstation EXTRA='-e kubernetes_repo_version=v1.34'
 ```
 
-Versoes de binarios baixados direto do GitHub (`helm_version`, `k9s_version`,
-`kustomize_version`, `kubectx_version`, `tflint_version`) tambem ficam la.
+Variaveis internas de role usam o nome da role como prefixo
+(`kubernetes_*`, `server_base_*`, `dev_tools_*`), como exige o
+`var-naming` do ansible-lint. Os toggles de alto nivel usados nos playbooks
+(`install_*`, `configure_shell`) nao tem prefixo.
+
+Versoes de binarios baixados direto do GitHub (`kubernetes_helm_version`, `kubernetes_k9s_version`,
+`kubernetes_kustomize_version`, `kubernetes_kubectx_version`, `hashicorp_tflint_version`) tambem ficam la.
 Confira a stream suportada em <https://kubernetes.io/releases/> antes de subir
-a `k8s_repo_version`.
+a `kubernetes_repo_version`.
 
 ## Tags uteis
 
@@ -178,7 +183,7 @@ syntax-check em cada push e pull request.
 
 - O Firefox foi removido da lista de Flatpaks: as distros alvo ja entregam um
   navegador e a versao do repo integra melhor com o desktop. Para reinstalar,
-  adicione `org.mozilla.firefox` em `flatpak_packages`.
+  adicione `org.mozilla.firefox` em `flatpak_apps_packages`.
 - Os playbooks antigos (`ubuntu.yml`, `fedora.yml`, `arch_linux.yaml`,
   `update.yml`) ficaram em `legacy/` apenas como referencia; o fluxo atual e o
   de `playbooks/`.

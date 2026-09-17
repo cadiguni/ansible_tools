@@ -7,7 +7,7 @@
     state: present
   when:
     - ansible_os_family == "Debian"
-    - dev_install_node | bool
+    - dev_tools_install_node | bool
 
 - name: Instalar .NET SDK 8 no Ubuntu
   ansible.builtin.apt:
@@ -16,9 +16,9 @@
       - aspnetcore-runtime-8.0
     state: present
   when:
-    - dev_install_dotnet | bool
+    - dev_tools_install_dotnet | bool
     - ansible_distribution == "Ubuntu"
-  register: dotnet_ubuntu
+  register: dev_tools_dotnet_result
   ignore_errors: true
 
 - name: Avisar quando o .NET nao estiver nos repositorios
@@ -27,44 +27,44 @@
       .NET SDK nao encontrado nos repositorios. Use o repositorio oficial da
       Microsoft ou o script dotnet-install.sh.
   when:
-    - dev_install_dotnet | bool
-    - dotnet_ubuntu is failed
+    - dev_tools_install_dotnet | bool
+    - dev_tools_dotnet_result is failed
 
 - name: Instalar ferramentas dev no Arch/CachyOS
   community.general.pacman:
-    name: "{{ dev_arch_packages }}"
+    name: "{{ dev_tools_arch_packages }}"
     state: present
   vars:
-    dev_arch_packages: >-
-      {{ (['nodejs', 'npm'] if dev_install_node | bool else [])
-         + (['dotnet-sdk', 'aspnet-runtime'] if dev_install_dotnet | bool else []) }}
+    dev_tools_arch_packages: >-
+      {{ (['nodejs', 'npm'] if dev_tools_install_node | bool else [])
+         + (['dotnet-sdk', 'aspnet-runtime'] if dev_tools_install_dotnet | bool else []) }}
   when:
     - ansible_os_family == "Archlinux"
-    - dev_arch_packages | length > 0
+    - dev_tools_arch_packages | length > 0
 
 - name: Instalar ferramentas dev no Fedora/RHEL
   ansible.builtin.dnf:
-    name: "{{ dev_rh_packages }}"
+    name: "{{ dev_tools_rh_packages }}"
     state: present
   vars:
-    dev_rh_packages: >-
-      {{ (['nodejs', 'npm'] if dev_install_node | bool else [])
-         + (['dotnet-sdk-8.0', 'aspnetcore-runtime-8.0'] if dev_install_dotnet | bool else []) }}
+    dev_tools_rh_packages: >-
+      {{ (['nodejs', 'npm'] if dev_tools_install_node | bool else [])
+         + (['dotnet-sdk-8.0', 'aspnetcore-runtime-8.0'] if dev_tools_install_dotnet | bool else []) }}
   when:
     - ansible_os_family == "RedHat"
-    - dev_rh_packages | length > 0
+    - dev_tools_rh_packages | length > 0
 
 - name: Instalar ferramentas dev no openSUSE/SLES
   community.general.zypper:
-    name: "{{ dev_suse_packages }}"
+    name: "{{ dev_tools_suse_packages }}"
     state: present
   vars:
-    dev_suse_packages: >-
-      {{ (['nodejs22', 'npm22'] if dev_install_node | bool else [])
-         + (['dotnet-sdk-8.0'] if dev_install_dotnet | bool else []) }}
+    dev_tools_suse_packages: >-
+      {{ (['nodejs22', 'npm22'] if dev_tools_install_node | bool else [])
+         + (['dotnet-sdk-8.0'] if dev_tools_install_dotnet | bool else []) }}
   when:
     - ansible_os_family == "Suse"
-    - dev_suse_packages | length > 0
+    - dev_tools_suse_packages | length > 0
   failed_when: false
 
 - name: Instalar pacotes globais do NPM
@@ -72,17 +72,17 @@
     name: "{{ item }}"
     global: true
     state: present
-  loop: "{{ dev_npm_global_packages }}"
+  loop: "{{ dev_tools_npm_global_packages }}"
   when:
-    - dev_install_node | bool
-    - dev_npm_global_packages | length > 0
+    - dev_tools_install_node | bool
+    - dev_tools_npm_global_packages | length > 0
 
 - name: Listar pacotes ja instalados via pipx
   become: true
   become_user: "{{ workstation_user }}"
   ansible.builtin.command:
     cmd: pipx list --short
-  register: pipx_packages
+  register: dev_tools_pipx_installed
   changed_when: false
   failed_when: false
 
@@ -91,10 +91,10 @@
   become_user: "{{ workstation_user }}"
   ansible.builtin.command:
     cmd: "pipx install {{ item }}"
-  loop: "{{ dev_pipx_packages }}"
+  loop: "{{ dev_tools_pipx_packages }}"
   when:
-    - pipx_packages.rc | default(1) == 0
-    - item not in pipx_packages.stdout
+    - dev_tools_pipx_installed.rc | default(1) == 0
+    - item not in dev_tools_pipx_installed.stdout
   changed_when: true
 
 - name: Garantir o PATH do pipx
@@ -102,8 +102,8 @@
   become_user: "{{ workstation_user }}"
   ansible.builtin.command:
     cmd: pipx ensurepath
-  register: pipx_path
-  changed_when: "'added to' in pipx_path.stdout | default('')"
+  register: dev_tools_pipx_path
+  changed_when: "'added to' in dev_tools_pipx_path.stdout | default('')"
   failed_when: false
 
 - name: Instalar mise (gerenciador de versoes)
@@ -114,4 +114,4 @@
     executable: /bin/bash
   args:
     creates: /usr/local/bin/mise
-  when: dev_install_mise | bool
+  when: dev_tools_install_mise | bool

@@ -6,6 +6,9 @@ name: lint
     branches: [main]
   pull_request:
 
+env:
+  ANSIBLE_CONFIG: ${{ github.workspace }}/ansible.cfg
+
 jobs:
   lint:
     runs-on: ubuntu-latest

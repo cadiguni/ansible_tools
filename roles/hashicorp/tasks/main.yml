@@ -68,7 +68,7 @@
 
 - name: Instalar TFLint
   ansible.builtin.unarchive:
-    src: "https://github.com/terraform-linters/tflint/releases/download/v{{ tflint_version }}/tflint_linux_{{ hashicorp_arch }}.zip"
+    src: "https://github.com/terraform-linters/tflint/releases/download/v{{ hashicorp_tflint_version }}/tflint_linux_{{ hashicorp_arch }}.zip"
     dest: /usr/local/bin
     remote_src: true
     owner: root
@@ -79,7 +79,7 @@
 
 - name: Instalar Terragrunt
   ansible.builtin.get_url:
-    url: "https://github.com/gruntwork-io/terragrunt/releases/download/v{{ terragrunt_version }}/terragrunt_linux_{{ hashicorp_arch }}"
+    url: "https://github.com/gruntwork-io/terragrunt/releases/download/v{{ hashicorp_terragrunt_version }}/terragrunt_linux_{{ hashicorp_arch }}"
     dest: /usr/local/bin/terragrunt
     owner: root
     group: root

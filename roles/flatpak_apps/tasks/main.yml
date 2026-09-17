@@ -7,12 +7,12 @@
 
 - name: Instalar apps graficos via Flatpak
   community.general.flatpak:
-    name: "{{ flatpak_packages }}"
+    name: "{{ flatpak_apps_packages }}"
     state: present
-  when: flatpak_packages | length > 0
+  when: flatpak_apps_packages | length > 0
 
 - name: Remover apps Flatpak indesejados
   community.general.flatpak:
-    name: "{{ flatpak_remove_packages }}"
+    name: "{{ flatpak_apps_remove_packages }}"
     state: absent
-  when: flatpak_remove_packages | length > 0
+  when: flatpak_apps_remove_packages | length > 0

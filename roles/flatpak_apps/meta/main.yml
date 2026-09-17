@@ -14,7 +14,7 @@ galaxy_info:
       versions: [all]
     - name: EL
       versions: [all]
-    - name: Archlinux
+    - name: ArchLinux
       versions: [all]
     - name: opensuse
       versions: [all]

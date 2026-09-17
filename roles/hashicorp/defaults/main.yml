@@ -8,6 +8,6 @@ hashicorp_packages:
 hashicorp_install_tflint: true
 hashicorp_install_terragrunt: false
 
-tflint_version: "0.54.0"
-terragrunt_version: "0.69.1"
+hashicorp_tflint_version: "0.54.0"
+hashicorp_terragrunt_version: "0.69.1"
 hashicorp_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"

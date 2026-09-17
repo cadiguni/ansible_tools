@@ -37,7 +37,7 @@
 - name: Verificar se o Starship ja esta instalado
   ansible.builtin.stat:
     path: /usr/local/bin/starship
-  register: starship_bin
+  register: shell_starship_bin
   when: shell_install_starship | bool
 
 - name: Instalar Starship prompt
@@ -51,7 +51,7 @@
     creates: /usr/local/bin/starship
   when:
     - shell_install_starship | bool
-    - not (starship_bin.stat.exists | default(false))
+    - not (shell_starship_bin.stat.exists | default(false))
 
 - name: Criar diretorio de configuracao do usuario
   ansible.builtin.file:

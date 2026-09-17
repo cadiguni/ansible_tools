@@ -22,30 +22,30 @@ shell_install_starship: true
 shell_install_modern_cli: true
 
 # --- Dev tools -----------------------------------------------------------
-dev_install_dotnet: true
-dev_install_node: true
-dev_install_mise: true        # gerenciador de versoes (node, python, go, java)
-dev_npm_global_packages:
+dev_tools_install_dotnet: true
+dev_tools_install_node: true
+dev_tools_install_mise: true        # gerenciador de versoes (node, python, go, java)
+dev_tools_npm_global_packages:
   - azure-functions-core-tools@4
 
 # --- Cloud ---------------------------------------------------------------
-cloud_install_aws: true
-cloud_install_azure: true
-cloud_install_gcloud: false
+cloud_tools_install_aws: true
+cloud_tools_install_azure: true
+cloud_tools_install_gcloud: false
 
 # --- Kubernetes ----------------------------------------------------------
 # Repo oficial pkgs.k8s.io usa uma stream por minor. Confira a versao
 # suportada em https://kubernetes.io/releases/ antes de subir.
-k8s_repo_version: "v1.33"
-k8s_install_helm: true
-k8s_install_k9s: true
-k8s_install_kubectx: true
-k8s_install_kustomize: true
+kubernetes_repo_version: "v1.33"
+kubernetes_install_helm: true
+kubernetes_install_k9s: true
+kubernetes_install_kubectx: true
+kubernetes_install_kustomize: true
 
-helm_version: "3.16.3"
-k9s_version: "0.32.7"
-kubectx_version: "0.9.5"
-kustomize_version: "5.5.0"
+kubernetes_helm_version: "3.16.3"
+kubernetes_k9s_version: "0.32.7"
+kubernetes_kubectx_version: "0.9.5"
+kubernetes_kustomize_version: "5.5.0"
 
 # --- HashiCorp -----------------------------------------------------------
 hashicorp_packages:
@@ -55,7 +55,7 @@ hashicorp_packages:
 
 # --- Flatpak -------------------------------------------------------------
 # Firefox removido de proposito: a maioria das distros ja entrega o navegador.
-flatpak_packages:
+flatpak_apps_packages:
   - com.obsproject.Studio
   - org.audacityteam.Audacity
   - org.godotengine.Godot
@@ -68,16 +68,16 @@ flatpak_packages:
 server_install_docker: true
 server_install_kubernetes: false
 
-server_configure_firewall: true
-server_install_fail2ban: true
-server_configure_ssh: true
-server_configure_ntp: true
-server_install_unattended_upgrades: true
-server_extra_packages: []
+server_base_configure_firewall: true
+server_base_install_fail2ban: true
+server_base_configure_ssh: true
+server_base_configure_ntp: true
+server_base_install_unattended_upgrades: true
+server_base_extra_packages: []
 
-firewall_allowed_tcp_ports:
+server_base_firewall_allowed_tcp_ports:
   - 22
 
-ssh_permit_root_login: "no"
-ssh_password_authentication: "no"
-ssh_max_auth_tries: 4
+server_base_ssh_permit_root_login: "no"
+server_base_ssh_password_authentication: "no"
+server_base_ssh_max_auth_tries: 4

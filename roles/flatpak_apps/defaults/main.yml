@@ -1,5 +1,5 @@
 ---
-flatpak_packages:
+flatpak_apps_packages:
   - com.obsproject.Studio
   - org.audacityteam.Audacity
   - org.godotengine.Godot
@@ -7,4 +7,4 @@ flatpak_packages:
   - com.getpostman.Postman
   - com.discordapp.Discord
 
-flatpak_remove_packages: []
+flatpak_apps_remove_packages: []

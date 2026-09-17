@@ -1,5 +1,6 @@
 ---
 - name: Instalar kubectl (Debian/Ubuntu)
+  when: ansible_os_family == "Debian"
   block:
     - name: Criar diretorio de keyrings
       ansible.builtin.file:
@@ -9,7 +10,7 @@
 
     - name: Baixar chave do repositorio Kubernetes
       ansible.builtin.get_url:
-        url: "https://pkgs.k8s.io/core:/stable:/{{ k8s_repo_version }}/deb/Release.key"
+        url: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_repo_version }}/deb/Release.key"
         dest: /etc/apt/keyrings/kubernetes.asc
         mode: "0644"
 
@@ -17,7 +18,7 @@
       ansible.builtin.apt_repository:
         repo: >-
           deb [signed-by=/etc/apt/keyrings/kubernetes.asc]
-          https://pkgs.k8s.io/core:/stable:/{{ k8s_repo_version }}/deb/ /
+          https://pkgs.k8s.io/core:/stable:/{{ kubernetes_repo_version }}/deb/ /
         filename: kubernetes
         state: present
 
@@ -26,24 +27,23 @@
         name: kubectl
         state: present
         update_cache: true
-  when: ansible_os_family == "Debian"
 
 - name: Instalar kubectl (Fedora/RHEL)
+  when: ansible_os_family == "RedHat"
   block:
     - name: Adicionar repositorio do Kubernetes
       ansible.builtin.yum_repository:
         name: kubernetes
         description: Kubernetes
-        baseurl: "https://pkgs.k8s.io/core:/stable:/{{ k8s_repo_version }}/rpm/"
+        baseurl: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_repo_version }}/rpm/"
         gpgcheck: true
-        gpgkey: "https://pkgs.k8s.io/core:/stable:/{{ k8s_repo_version }}/rpm/repodata/repomd.xml.key"
+        gpgkey: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_repo_version }}/rpm/repodata/repomd.xml.key"
         enabled: true
 
     - name: Instalar kubectl
       ansible.builtin.dnf:
         name: kubectl
         state: present
-  when: ansible_os_family == "RedHat"
 
 - name: Instalar kubectl e helm (Arch/CachyOS)
   community.general.pacman:
@@ -63,23 +63,23 @@
 
 - name: Instalar Helm
   ansible.builtin.unarchive:
-    src: "https://get.helm.sh/helm-v{{ helm_version }}-linux-{{ k8s_arch }}.tar.gz"
+    src: "https://get.helm.sh/helm-v{{ kubernetes_helm_version }}-linux-{{ kubernetes_arch }}.tar.gz"
     dest: /usr/local/bin
     remote_src: true
     extra_opts:
       - --strip-components=1
-      - "linux-{{ k8s_arch }}/helm"
+      - "linux-{{ kubernetes_arch }}/helm"
     owner: root
     group: root
     mode: "0755"
     creates: /usr/local/bin/helm
   when:
-    - k8s_install_helm | bool
+    - kubernetes_install_helm | bool
     - ansible_os_family != "Archlinux"
 
 - name: Instalar k9s
   ansible.builtin.unarchive:
-    src: "https://github.com/derailed/k9s/releases/download/v{{ k9s_version }}/k9s_Linux_{{ k8s_arch }}.tar.gz"
+    src: "https://github.com/derailed/k9s/releases/download/v{{ kubernetes_k9s_version }}/k9s_Linux_{{ kubernetes_arch }}.tar.gz"
     dest: /usr/local/bin
     remote_src: true
     include:
@@ -89,13 +89,13 @@
     mode: "0755"
     creates: /usr/local/bin/k9s
   when:
-    - k8s_install_k9s | bool
+    - kubernetes_install_k9s | bool
     - ansible_os_family != "Archlinux"
 
 - name: Instalar kustomize
   ansible.builtin.unarchive:
     src: >-
-      {{ kustomize_base_url }}/kustomize%2Fv{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_{{ k8s_arch }}.tar.gz
+      {{ kubernetes_kustomize_base_url }}/kustomize%2Fv{{ kubernetes_kustomize_version }}/{{ kubernetes_kustomize_file }}
     dest: /usr/local/bin
     remote_src: true
     include:
@@ -105,12 +105,14 @@
     mode: "0755"
     creates: /usr/local/bin/kustomize
   vars:
-    kustomize_base_url: https://github.com/kubernetes-sigs/kustomize/releases/download
-  when: k8s_install_kustomize | bool
+    kubernetes_kustomize_base_url: https://github.com/kubernetes-sigs/kustomize/releases/download
+    kubernetes_kustomize_file: >-
+      kustomize_v{{ kubernetes_kustomize_version }}_linux_{{ kubernetes_arch }}.tar.gz
+  when: kubernetes_install_kustomize | bool
 
 - name: Instalar kubectx e kubens
   ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/ahmetb/kubectx/v{{ kubectx_version }}/{{ item }}"
+    url: "https://raw.githubusercontent.com/ahmetb/kubectx/v{{ kubernetes_kubectx_version }}/{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
     owner: root
     group: root
@@ -118,7 +120,7 @@
   loop:
     - kubectx
     - kubens
-  when: k8s_install_kubectx | bool
+  when: kubernetes_install_kubectx | bool
 
 - name: Gerar completion do kubectl para o bash
   ansible.builtin.shell:

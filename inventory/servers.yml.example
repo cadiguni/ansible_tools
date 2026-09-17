@@ -15,9 +15,9 @@ all:
         ansible_python_interpreter: /usr/bin/python3
 
         # Ajuste antes de rodar: trancar SSH sem chave configurada derruba o acesso.
-        ssh_permit_root_login: "no"
-        ssh_password_authentication: "no"
-        firewall_allowed_tcp_ports:
+        server_base_ssh_permit_root_login: "no"
+        server_base_ssh_password_authentication: "no"
+        server_base_firewall_allowed_tcp_ports:
           - 22
           - 80
           - 443

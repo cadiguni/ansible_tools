@@ -35,15 +35,15 @@
     - name: Verificar se o Flatpak esta instalado
       ansible.builtin.stat:
         path: /usr/bin/flatpak
-      register: flatpak_bin
+      register: flatpak_apps_bin
       tags: [flatpak]
 
     - name: Atualizar apps Flatpak
       ansible.builtin.command:
         cmd: flatpak update --noninteractive --assumeyes
-      register: flatpak_update
-      changed_when: "'Nothing to do' not in flatpak_update.stdout"
-      when: flatpak_bin.stat.exists
+      register: flatpak_apps_update
+      changed_when: "'Nothing to do' not in flatpak_apps_update.stdout"
+      when: flatpak_apps_bin.stat.exists
       tags: [flatpak]
 
     - name: Verificar se o sistema precisa de reboot (Debian)

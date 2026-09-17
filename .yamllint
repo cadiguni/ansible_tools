@@ -7,7 +7,12 @@ rules:
     level: warning
   truthy:
     allowed-values: ["true", "false"]
+  comments:
+    min-spaces-from-content: 1
   comments-indentation: disable
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
   braces:
     max-spaces-inside: 1
 

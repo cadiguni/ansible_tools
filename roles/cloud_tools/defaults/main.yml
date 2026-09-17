@@ -1,6 +1,6 @@
 ---
-cloud_install_aws: true
-cloud_install_azure: true
-cloud_install_gcloud: false
+cloud_tools_install_aws: true
+cloud_tools_install_azure: true
+cloud_tools_install_gcloud: false
 
-cloud_aws_arch: "{{ 'x86_64' if ansible_architecture == 'x86_64' else 'aarch64' }}"
+cloud_tools_aws_arch: "{{ 'x86_64' if ansible_architecture == 'x86_64' else 'aarch64' }}"
