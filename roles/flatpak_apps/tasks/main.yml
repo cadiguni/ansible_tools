@@ -7,11 +7,12 @@
 
 - name: Instalar apps graficos via Flatpak
   community.general.flatpak:
-    name: "{{ item }}"
+    name: "{{ flatpak_packages }}"
     state: present
-  loop:
-    - org.mozilla.firefox
-    - com.obsproject.Studio
-    - org.audacityteam.Audacity
-    - org.godotengine.Godot
-    - com.valvesoftware.Steam
+  when: flatpak_packages | length > 0
+
+- name: Remover apps Flatpak indesejados
+  community.general.flatpak:
+    name: "{{ flatpak_remove_packages }}"
+    state: absent
+  when: flatpak_remove_packages | length > 0

@@ -1,0 +1,24 @@
+---
+common_packages:
+  - bash-completion
+  - ca-certificates
+  - curl
+  - flatpak
+  - gcc
+  - gcc-c++
+  - git
+  - htop
+  - java-21-openjdk-devel
+  - jq
+  - make
+  - mtr
+  - ncdu
+  - p7zip-full
+  - patterns-devel-base-devel_basis
+  - python311
+  - python311-pip
+  - tree
+  - unzip
+  - wget
+  - zip
+  - zsh

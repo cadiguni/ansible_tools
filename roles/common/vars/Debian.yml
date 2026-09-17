@@ -5,22 +5,34 @@ common_packages:
   - build-essential
   - ca-certificates
   - curl
+  - dnsutils
   - flatpak
   - git
+  - git-lfs
   - gnupg
   - htop
+  - iotop
   - jq
   - lsb-release
+  - lsof
+  - make
   - mtr
   - ncdu
+  - net-tools
   - openjdk-21-jdk
+  - openssh-client
   - p7zip-full
+  - pipx
   - python3
   - python3-pip
   - python3-venv
+  - rsync
   - software-properties-common
+  - tmux
+  - traceroute
   - tree
   - unzip
+  - vim
   - wget
   - zip
   - zsh

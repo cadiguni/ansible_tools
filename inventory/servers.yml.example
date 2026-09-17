@@ -1,0 +1,23 @@
+---
+# Copie para inventory/servers.yml e ajuste para o seu ambiente.
+#   ansible-playbook -i inventory/servers.yml playbooks/server.yml
+all:
+  children:
+    servers:
+      hosts:
+        srv-app-01:
+          ansible_host: 10.0.0.11
+        srv-db-01:
+          ansible_host: 10.0.0.12
+      vars:
+        ansible_user: deploy
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        ansible_python_interpreter: /usr/bin/python3
+
+        # Ajuste antes de rodar: trancar SSH sem chave configurada derruba o acesso.
+        ssh_permit_root_login: "no"
+        ssh_password_authentication: "no"
+        firewall_allowed_tcp_ports:
+          - 22
+          - 80
+          - 443

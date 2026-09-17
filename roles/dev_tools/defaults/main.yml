@@ -1,0 +1,12 @@
+---
+dev_install_dotnet: true
+dev_install_node: true
+dev_install_mise: true
+
+dev_npm_global_packages:
+  - azure-functions-core-tools@4
+
+dev_pipx_packages:
+  - ansible-lint
+  - pre-commit
+  - httpie

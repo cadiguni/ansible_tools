@@ -1,0 +1,109 @@
+---
+- name: Instalar CLI moderno (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ shell_modern_cli_packages['Debian'] }}"
+    state: present
+  when:
+    - shell_install_modern_cli | bool
+    - ansible_os_family == "Debian"
+  failed_when: false
+
+- name: Instalar CLI moderno (Arch/CachyOS)
+  community.general.pacman:
+    name: "{{ shell_modern_cli_packages['Archlinux'] }}"
+    state: present
+  when:
+    - shell_install_modern_cli | bool
+    - ansible_os_family == "Archlinux"
+
+- name: Instalar CLI moderno (Fedora/RHEL)
+  ansible.builtin.dnf:
+    name: "{{ shell_modern_cli_packages['RedHat'] }}"
+    state: present
+  when:
+    - shell_install_modern_cli | bool
+    - ansible_os_family == "RedHat"
+  failed_when: false
+
+- name: Instalar CLI moderno (openSUSE/SLES)
+  community.general.zypper:
+    name: "{{ shell_modern_cli_packages['Suse'] }}"
+    state: present
+  when:
+    - shell_install_modern_cli | bool
+    - ansible_os_family == "Suse"
+  failed_when: false
+
+- name: Verificar se o Starship ja esta instalado
+  ansible.builtin.stat:
+    path: /usr/local/bin/starship
+  register: starship_bin
+  when: shell_install_starship | bool
+
+- name: Instalar Starship prompt
+  ansible.builtin.shell:
+    cmd: >-
+      set -o pipefail &&
+      curl -fsSL https://starship.rs/install.sh |
+      sh -s -- --yes --bin-dir /usr/local/bin
+    executable: /bin/bash
+  args:
+    creates: /usr/local/bin/starship
+  when:
+    - shell_install_starship | bool
+    - not (starship_bin.stat.exists | default(false))
+
+- name: Criar diretorio de configuracao do usuario
+  ansible.builtin.file:
+    path: "/home/{{ workstation_user }}/.config"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0755"
+  when: workstation_user != "root"
+
+- name: Instalar configuracao do Starship
+  ansible.builtin.copy:
+    src: starship.toml
+    dest: "/home/{{ workstation_user }}/.config/starship.toml"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0644"
+    force: false
+  when:
+    - shell_install_starship | bool
+    - workstation_user != "root"
+
+- name: Instalar aliases e ajustes comuns de shell
+  ansible.builtin.copy:
+    src: devops-aliases.sh
+    dest: /etc/profile.d/99-devops-aliases.sh
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Carregar aliases e Starship no zsh do usuario
+  ansible.builtin.blockinfile:
+    path: "/home/{{ workstation_user }}/.zshrc"
+    create: true
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0644"
+    marker: "# {mark} ANSIBLE TOOLS"
+    block: |
+      [ -f /etc/profile.d/99-devops-aliases.sh ] && . /etc/profile.d/99-devops-aliases.sh
+      command -v starship >/dev/null && eval "$(starship init zsh)"
+      command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+      command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+      command -v kubectl >/dev/null && source <(kubectl completion zsh)
+  when:
+    - shell_default == "zsh"
+    - workstation_user != "root"
+
+- name: Definir zsh como shell padrao do usuario
+  ansible.builtin.user:
+    name: "{{ workstation_user }}"
+    shell: /bin/zsh
+  when:
+    - shell_default == "zsh"
+    - workstation_user != "root"

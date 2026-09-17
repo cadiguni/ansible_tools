@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+# Sobrescreve /etc/ssh/sshd_config via drop-in.
+PermitRootLogin {{ ssh_permit_root_login }}
+PasswordAuthentication {{ ssh_password_authentication }}
+KbdInteractiveAuthentication {{ ssh_password_authentication }}
+PubkeyAuthentication yes
+MaxAuthTries {{ ssh_max_auth_tries }}
+ClientAliveInterval {{ ssh_client_alive_interval }}
+ClientAliveCountMax 2
+X11Forwarding {{ ssh_x11_forwarding }}

@@ -1,0 +1,10 @@
+---
+flatpak_packages:
+  - com.obsproject.Studio
+  - org.audacityteam.Audacity
+  - org.godotengine.Godot
+  - com.valvesoftware.Steam
+  - com.getpostman.Postman
+  - com.discordapp.Discord
+
+flatpak_remove_packages: []

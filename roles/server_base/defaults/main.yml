@@ -1,0 +1,17 @@
+---
+server_configure_firewall: true
+server_install_fail2ban: true
+server_configure_ssh: true
+server_configure_ntp: true
+server_install_unattended_upgrades: true
+
+server_extra_packages: []
+
+firewall_allowed_tcp_ports:
+  - 22
+
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+ssh_max_auth_tries: 4
+ssh_client_alive_interval: 300
+ssh_x11_forwarding: "no"

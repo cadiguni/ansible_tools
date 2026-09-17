@@ -1,5 +1,12 @@
 ---
-- name: Instalar pacotes base no Fedora
+- name: Habilitar repositorio EPEL no RHEL/Rocky/Alma
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+  when: ansible_distribution != "Fedora"
+  failed_when: false
+
+- name: Instalar pacotes base no Fedora/RHEL
   ansible.builtin.dnf:
     name: "{{ common_packages + [common_java_package] }}"
     state: present

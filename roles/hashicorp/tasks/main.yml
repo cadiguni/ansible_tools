@@ -1,0 +1,87 @@
+---
+- name: Instalar ferramentas HashiCorp (Debian/Ubuntu)
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Criar diretorio de keyrings
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Baixar chave da HashiCorp
+      ansible.builtin.get_url:
+        url: https://apt.releases.hashicorp.com/gpg
+        dest: /etc/apt/keyrings/hashicorp.asc
+        mode: "0644"
+
+    - name: Adicionar repositorio da HashiCorp
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ hashicorp_arch }} signed-by=/etc/apt/keyrings/hashicorp.asc]
+          https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+        filename: hashicorp
+        state: present
+
+    - name: Instalar pacotes da HashiCorp
+      ansible.builtin.apt:
+        name: "{{ hashicorp_packages }}"
+        state: present
+        update_cache: true
+
+- name: Instalar ferramentas HashiCorp (Fedora/RHEL)
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Adicionar repositorio da HashiCorp
+      ansible.builtin.yum_repository:
+        name: hashicorp
+        description: HashiCorp Stable
+        baseurl: "https://rpm.releases.hashicorp.com/{{ 'fedora' if ansible_distribution == 'Fedora' else 'RHEL' }}/$releasever/$basearch/stable"
+        gpgcheck: true
+        gpgkey: https://rpm.releases.hashicorp.com/gpg
+        enabled: true
+
+    - name: Instalar pacotes da HashiCorp
+      ansible.builtin.dnf:
+        name: "{{ hashicorp_packages }}"
+        state: present
+
+- name: Instalar ferramentas HashiCorp (Arch/CachyOS)
+  community.general.pacman:
+    name: "{{ hashicorp_packages }}"
+    state: present
+  when: ansible_os_family == "Archlinux"
+
+- name: Instalar ferramentas HashiCorp (openSUSE/SLES)
+  when: ansible_os_family == "Suse"
+  block:
+    - name: Adicionar repositorio da HashiCorp
+      community.general.zypper_repository:
+        name: hashicorp
+        repo: https://rpm.releases.hashicorp.com/RHEL/9/x86_64/stable
+        auto_import_keys: true
+        state: present
+
+    - name: Instalar pacotes da HashiCorp
+      community.general.zypper:
+        name: "{{ hashicorp_packages }}"
+        state: present
+
+- name: Instalar TFLint
+  ansible.builtin.unarchive:
+    src: "https://github.com/terraform-linters/tflint/releases/download/v{{ tflint_version }}/tflint_linux_{{ hashicorp_arch }}.zip"
+    dest: /usr/local/bin
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0755"
+    creates: /usr/local/bin/tflint
+  when: hashicorp_install_tflint | bool
+
+- name: Instalar Terragrunt
+  ansible.builtin.get_url:
+    url: "https://github.com/gruntwork-io/terragrunt/releases/download/v{{ terragrunt_version }}/terragrunt_linux_{{ hashicorp_arch }}"
+    dest: /usr/local/bin/terragrunt
+    owner: root
+    group: root
+    mode: "0755"
+  when: hashicorp_install_terragrunt | bool

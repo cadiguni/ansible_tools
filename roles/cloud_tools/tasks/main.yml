@@ -1,0 +1,155 @@
+---
+- name: Instalar AWS CLI v2 (instalador oficial)
+  when: cloud_install_aws | bool
+  block:
+    - name: Baixar AWS CLI v2
+      ansible.builtin.get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-{{ cloud_aws_arch }}.zip"
+        dest: /tmp/awscliv2.zip
+        mode: "0644"
+
+    - name: Extrair AWS CLI v2
+      ansible.builtin.unarchive:
+        src: /tmp/awscliv2.zip
+        dest: /tmp
+        remote_src: true
+        creates: /tmp/aws/install
+
+    - name: Verificar AWS CLI existente
+      ansible.builtin.stat:
+        path: /usr/local/bin/aws
+      register: aws_bin
+
+    - name: Instalar ou atualizar AWS CLI v2
+      ansible.builtin.command:
+        cmd: "/tmp/aws/install {{ '--update' if aws_bin.stat.exists else '' }}"
+      register: aws_install
+      changed_when: aws_install.rc == 0
+
+    - name: Limpar artefatos do instalador
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/awscliv2.zip
+        - /tmp/aws
+
+- name: Instalar Azure CLI (Debian/Ubuntu)
+  when:
+    - cloud_install_azure | bool
+    - ansible_os_family == "Debian"
+  block:
+    - name: Criar diretorio de keyrings
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Baixar chave da Microsoft
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        dest: /etc/apt/keyrings/microsoft.asc
+        mode: "0644"
+
+    - name: Adicionar repositorio do Azure CLI
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}
+          signed-by=/etc/apt/keyrings/microsoft.asc]
+          https://packages.microsoft.com/repos/azure-cli/
+          {{ ansible_distribution_release }} main
+        filename: azure-cli
+        state: present
+
+    - name: Instalar Azure CLI
+      ansible.builtin.apt:
+        name: azure-cli
+        state: present
+        update_cache: true
+
+- name: Instalar Azure CLI (Fedora/RHEL)
+  when:
+    - cloud_install_azure | bool
+    - ansible_os_family == "RedHat"
+  block:
+    - name: Importar chave da Microsoft
+      ansible.builtin.rpm_key:
+        key: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Adicionar repositorio do Azure CLI
+      ansible.builtin.yum_repository:
+        name: azure-cli
+        description: Azure CLI
+        baseurl: https://packages.microsoft.com/yumrepos/azure-cli
+        gpgcheck: true
+        gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+        enabled: true
+
+    - name: Instalar Azure CLI
+      ansible.builtin.dnf:
+        name: azure-cli
+        state: present
+
+- name: Instalar Azure CLI (Arch/CachyOS)
+  community.general.pacman:
+    name: azure-cli
+    state: present
+  when:
+    - cloud_install_azure | bool
+    - ansible_os_family == "Archlinux"
+  failed_when: false
+
+- name: Instalar Azure CLI via pipx (openSUSE/SLES)
+  become: true
+  become_user: "{{ workstation_user }}"
+  community.general.pipx:
+    name: azure-cli
+    state: present
+  when:
+    - cloud_install_azure | bool
+    - ansible_os_family == "Suse"
+
+- name: Instalar Google Cloud CLI (Debian/Ubuntu)
+  when:
+    - cloud_install_gcloud | bool
+    - ansible_os_family == "Debian"
+  block:
+    - name: Baixar chave do Google Cloud
+      ansible.builtin.get_url:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        dest: /etc/apt/keyrings/google-cloud.gpg
+        mode: "0644"
+
+    - name: Adicionar repositorio do Google Cloud CLI
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [signed-by=/etc/apt/keyrings/google-cloud.gpg]
+          https://packages.cloud.google.com/apt cloud-sdk main
+        filename: google-cloud-cli
+        state: present
+
+    - name: Instalar Google Cloud CLI
+      ansible.builtin.apt:
+        name: google-cloud-cli
+        state: present
+        update_cache: true
+
+- name: Instalar Google Cloud CLI (Fedora/RHEL)
+  when:
+    - cloud_install_gcloud | bool
+    - ansible_os_family == "RedHat"
+  block:
+    - name: Adicionar repositorio do Google Cloud CLI
+      ansible.builtin.yum_repository:
+        name: google-cloud-cli
+        description: Google Cloud CLI
+        baseurl: https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+        gpgcheck: true
+        gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        enabled: true
+
+    - name: Instalar Google Cloud CLI
+      ansible.builtin.dnf:
+        name: google-cloud-cli
+        state: present

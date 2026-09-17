@@ -2,19 +2,30 @@
 common_packages:
   - base-devel
   - bash-completion
+  - bind
   - curl
   - flatpak
   - git
+  - git-lfs
   - htop
+  - inetutils
+  - iotop
   - jdk21-openjdk
   - jq
+  - lsof
   - mtr
   - ncdu
+  - net-tools
+  - openssh
   - p7zip
   - python
   - python-pip
+  - python-pipx
+  - rsync
+  - tmux
   - tree
   - unzip
+  - vim
   - wget
   - zip
   - zsh

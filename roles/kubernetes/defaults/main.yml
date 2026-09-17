@@ -1,0 +1,13 @@
+---
+k8s_repo_version: "v1.33"
+k8s_install_helm: true
+k8s_install_k9s: true
+k8s_install_kubectx: true
+k8s_install_kustomize: true
+
+helm_version: "3.16.3"
+k9s_version: "0.32.7"
+kubectx_version: "0.9.5"
+kustomize_version: "5.5.0"
+
+k8s_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"

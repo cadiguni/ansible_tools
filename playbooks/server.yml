@@ -1,0 +1,28 @@
+---
+- name: Configurar servidor Linux (headless)
+  hosts: servers
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Validar familia de SO suportada
+      ansible.builtin.assert:
+        that: ansible_os_family in ["Debian", "Archlinux", "RedHat", "Suse"]
+        fail_msg: "Familia de SO '{{ ansible_os_family }}' nao suportada."
+        quiet: true
+      tags: always
+
+  roles:
+    - role: common
+      tags: [common, base]
+
+    - role: server_base
+      tags: [server, hardening]
+
+    - role: docker
+      when: server_install_docker | bool
+      tags: [docker, containers]
+
+    - role: kubernetes
+      when: server_install_kubernetes | bool
+      tags: [k8s, kubernetes]

@@ -1,0 +1,10 @@
+---
+docker_use_official_repo: true
+docker_manage_daemon_config: true
+
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
+  live-restore: true

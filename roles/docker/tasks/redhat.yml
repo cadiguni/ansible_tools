@@ -1,0 +1,29 @@
+---
+- name: Adicionar repositorio oficial do Docker
+  ansible.builtin.yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable
+    baseurl: "https://download.docker.com/linux/{{ 'fedora' if ansible_distribution == 'Fedora' else 'centos' }}/$releasever/$basearch/stable"
+    gpgcheck: true
+    gpgkey: "https://download.docker.com/linux/{{ 'fedora' if ansible_distribution == 'Fedora' else 'centos' }}/gpg"
+    enabled: true
+  when: docker_use_official_repo | bool
+
+- name: Instalar Docker Engine e plugins
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+  when: docker_use_official_repo | bool
+
+- name: Instalar Docker pelos repositorios da distro
+  ansible.builtin.dnf:
+    name:
+      - moby-engine
+      - docker-compose
+    state: present
+  when: not (docker_use_official_repo | bool)

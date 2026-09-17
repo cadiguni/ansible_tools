@@ -1,0 +1,11 @@
+---
+- name: Atualizar cache do zypper
+  community.general.zypper_repository:
+    repo: "*"
+    runrefresh: true
+  changed_when: false
+
+- name: Instalar pacotes base no openSUSE/SLES
+  community.general.zypper:
+    name: "{{ common_packages }}"
+    state: present

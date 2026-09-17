@@ -1,35 +1,45 @@
 ---
 - name: Preparar dependencias basicas para rodar o Ansible
-  hosts: localhost
+  hosts: all
   become: true
   gather_facts: true
 
+  vars:
+    bootstrap_packages:
+      - ansible
+      - git
+      - unzip
+
   tasks:
-    - name: Instalar Git e Ansible no Debian/Ubuntu
+    - name: Instalar dependencias no Debian/Ubuntu
       ansible.builtin.apt:
-        name:
-          - ansible
-          - git
-          - unzip
+        name: "{{ bootstrap_packages }}"
         state: present
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Instalar Git e Ansible no Arch/CachyOS
+    - name: Instalar dependencias no Arch/CachyOS
       community.general.pacman:
-        name:
-          - ansible
-          - git
-          - unzip
+        name: "{{ bootstrap_packages }}"
         state: present
         update_cache: true
       when: ansible_os_family == "Archlinux"
 
-    - name: Instalar Git e Ansible no Fedora
+    - name: Instalar dependencias no Fedora/RHEL
       ansible.builtin.dnf:
-        name:
-          - ansible
-          - git
-          - unzip
+        name: "{{ bootstrap_packages }}"
         state: present
       when: ansible_os_family == "RedHat"
+
+    - name: Instalar dependencias no openSUSE/SLES
+      community.general.zypper:
+        name: "{{ bootstrap_packages }}"
+        state: present
+      when: ansible_os_family == "Suse"
+
+    - name: Falhar cedo em familia de SO nao suportada
+      ansible.builtin.fail:
+        msg: >-
+          Familia de SO '{{ ansible_os_family }}' nao suportada.
+          Suportadas: Debian, Archlinux, RedHat, Suse.
+      when: ansible_os_family not in ["Debian", "Archlinux", "RedHat", "Suse"]

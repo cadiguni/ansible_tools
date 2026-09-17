@@ -1,0 +1,10 @@
+---
+shell_default: zsh
+shell_install_starship: true
+shell_install_modern_cli: true
+
+shell_modern_cli_packages:
+  Debian: [bat, eza, fd-find, fzf, ripgrep, zoxide, direnv]
+  Archlinux: [bat, eza, fd, fzf, ripgrep, zoxide, direnv]
+  RedHat: [bat, eza, fd-find, fzf, ripgrep, zoxide, direnv]
+  Suse: [bat, eza, fd, fzf, ripgrep, zoxide, direnv]

@@ -1,0 +1,16 @@
+# Gerenciado pelo Ansible (role: shell) - instalado apenas se ainda nao existir.
+add_newline = false
+command_timeout = 1000
+
+[kubernetes]
+disabled = false
+format = '[⎈ $context(\($namespace\))](bold blue) '
+
+[git_status]
+disabled = false
+
+[terraform]
+disabled = false
+
+[docker_context]
+disabled = false

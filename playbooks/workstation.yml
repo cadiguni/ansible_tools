@@ -1,25 +1,57 @@
 ---
 - name: Configurar workstation Linux
-  hosts: localhost
+  hosts: workstations
   become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Validar familia de SO suportada
+      ansible.builtin.assert:
+        that: ansible_os_family in ["Debian", "Archlinux", "RedHat", "Suse"]
+        fail_msg: "Familia de SO '{{ ansible_os_family }}' nao suportada."
+        quiet: true
+      tags: always
 
   roles:
     - role: common
-      tags:
-        - common
-        - base
+      tags: [common, base]
+
+    - role: shell
+      when: configure_shell | bool
+      tags: [shell, base]
+
     - role: dev_tools
-      tags:
-        - dev
+      when: install_dev_tools | bool
+      tags: [dev]
+
     - role: docker
-      tags:
-        - docker
+      when: install_docker | bool
+      tags: [docker, containers]
+
+    - role: kubernetes
+      when: install_kubernetes | bool
+      tags: [k8s, kubernetes, devops]
+
+    - role: cloud_tools
+      when: install_cloud_tools | bool
+      tags: [cloud, devops]
+
+    - role: hashicorp
+      when: install_hashicorp | bool
+      tags: [hashicorp, terraform, devops]
+
     - role: vscode
-      tags:
-        - vscode
-        - dev
+      when: install_vscode | bool
+      tags: [vscode, dev]
+
     - role: flatpak_apps
-      tags:
-        - flatpak
-        - media
-        - gaming
+      when: install_flatpak_apps | bool
+      tags: [flatpak, apps, media, gaming]
+
+  post_tasks:
+    - name: Resumo final
+      ansible.builtin.debug:
+        msg:
+          - "Workstation configurada em {{ ansible_distribution }} {{ ansible_distribution_version }}."
+          - "Faca logout/login para aplicar o grupo docker e a troca de shell."
+      tags: always

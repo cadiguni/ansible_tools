@@ -1,0 +1,83 @@
+---
+# Toggles globais. Sobrescreva no inventario, em group_vars/host_vars
+# ou na linha de comando (-e "install_kubernetes=false").
+
+# Usuario alvo das configuracoes de usuario (shell, dotfiles, grupo docker).
+# Resolve o usuario real mesmo quando o playbook roda com sudo.
+workstation_user: "{{ ansible_env.SUDO_USER | default(ansible_user | default(ansible_user_id, true), true) }}"
+
+# --- Workstation ---------------------------------------------------------
+install_dev_tools: true
+install_docker: true
+install_kubernetes: true
+install_cloud_tools: true
+install_hashicorp: true
+install_vscode: true
+install_flatpak_apps: true
+configure_shell: true
+
+# --- Shell ---------------------------------------------------------------
+shell_default: zsh            # zsh | bash | none (nao troca o shell do usuario)
+shell_install_starship: true
+shell_install_modern_cli: true
+
+# --- Dev tools -----------------------------------------------------------
+dev_install_dotnet: true
+dev_install_node: true
+dev_install_mise: true        # gerenciador de versoes (node, python, go, java)
+dev_npm_global_packages:
+  - azure-functions-core-tools@4
+
+# --- Cloud ---------------------------------------------------------------
+cloud_install_aws: true
+cloud_install_azure: true
+cloud_install_gcloud: false
+
+# --- Kubernetes ----------------------------------------------------------
+# Repo oficial pkgs.k8s.io usa uma stream por minor. Confira a versao
+# suportada em https://kubernetes.io/releases/ antes de subir.
+k8s_repo_version: "v1.33"
+k8s_install_helm: true
+k8s_install_k9s: true
+k8s_install_kubectx: true
+k8s_install_kustomize: true
+
+helm_version: "3.16.3"
+k9s_version: "0.32.7"
+kubectx_version: "0.9.5"
+kustomize_version: "5.5.0"
+
+# --- HashiCorp -----------------------------------------------------------
+hashicorp_packages:
+  - terraform
+  - packer
+  - vault
+
+# --- Flatpak -------------------------------------------------------------
+# Firefox removido de proposito: a maioria das distros ja entrega o navegador.
+flatpak_packages:
+  - com.obsproject.Studio
+  - org.audacityteam.Audacity
+  - org.godotengine.Godot
+  - com.valvesoftware.Steam
+  - com.getpostman.Postman
+  - com.discordapp.Discord
+
+# --- Servidor ------------------------------------------------------------
+# Toggles proprios: o playbook de servidor nao herda os da workstation.
+server_install_docker: true
+server_install_kubernetes: false
+
+server_configure_firewall: true
+server_install_fail2ban: true
+server_configure_ssh: true
+server_configure_ntp: true
+server_install_unattended_upgrades: true
+server_extra_packages: []
+
+firewall_allowed_tcp_ports:
+  - 22
+
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+ssh_max_auth_tries: 4

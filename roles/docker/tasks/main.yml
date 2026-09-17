@@ -1,40 +1,49 @@
 ---
-- name: Definir usuario alvo para o grupo docker
-  ansible.builtin.set_fact:
-    workstation_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id, true) }}"
-
-- name: Instalar Docker no Debian/Ubuntu
-  ansible.builtin.apt:
-    name:
-      - docker.io
-      - docker-compose-v2
-    state: present
+- name: Instalar Docker (Debian/Ubuntu)
+  ansible.builtin.include_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- name: Instalar Docker no Arch/CachyOS
+- name: Instalar Docker (Arch/CachyOS)
   community.general.pacman:
     name:
       - docker
       - docker-compose
+      - docker-buildx
     state: present
   when: ansible_os_family == "Archlinux"
 
-- name: Instalar Docker no Fedora
-  ansible.builtin.dnf:
-    name:
-      - moby-engine
-      - docker-compose
-    state: present
+- name: Instalar Docker (Fedora/RHEL)
+  ansible.builtin.include_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- name: Habilitar e iniciar Docker
+- name: Instalar Docker (openSUSE/SLES)
+  community.general.zypper:
+    name:
+      - docker
+      - docker-compose
+    state: present
+  when: ansible_os_family == "Suse"
+
+- name: Configurar o daemon do Docker
+  ansible.builtin.copy:
+    content: "{{ docker_daemon_config | to_nice_json }}\n"
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+  when: docker_manage_daemon_config | bool
+  notify: Restart docker
+
+- name: Habilitar e iniciar o Docker
   ansible.builtin.systemd:
     name: docker
     enabled: true
     state: started
+    daemon_reload: true
 
-- name: Adicionar usuario atual ao grupo docker
+- name: Adicionar usuario ao grupo docker
   ansible.builtin.user:
     name: "{{ workstation_user }}"
     groups: docker
     append: true
+  when: workstation_user != "root"

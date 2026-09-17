@@ -10,6 +10,19 @@
   ansible.builtin.include_tasks: arch.yml
   when: ansible_os_family == "Archlinux"
 
-- name: Instalar pacotes base - Fedora
+- name: Instalar pacotes base - Fedora/RHEL
   ansible.builtin.include_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
+
+- name: Instalar pacotes base - openSUSE/SLES
+  ansible.builtin.include_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
+- name: Garantir diretorio local de binarios do usuario
+  ansible.builtin.file:
+    path: "/home/{{ workstation_user }}/.local/bin"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0755"
+  when: workstation_user != "root"

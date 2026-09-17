@@ -1,0 +1,13 @@
+---
+hashicorp_packages:
+  - terraform
+  - packer
+  - vault
+
+# Ferramentas extras instaladas por binario (independem da distro).
+hashicorp_install_tflint: true
+hashicorp_install_terragrunt: false
+
+tflint_version: "0.54.0"
+terragrunt_version: "0.69.1"
+hashicorp_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
